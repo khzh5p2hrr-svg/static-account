@@ -33,6 +33,7 @@
             <div class="controls">
                 <input id="tagInput" placeholder="Введите ваш тег (например: sampleTag123)" />
                 <button id="loadBtn">Показать</button>
+                <button id="createBtn" title="Создать тестовый тег">Создать тест</button>
             </div>
             <div id="status" style="margin-bottom:10px;color:#444"></div>
 
@@ -69,7 +70,7 @@
                 <span class="stat-value" id="fame">—</span>
             </div>
 
-            <!-- Информация об аккаунте -->
+            <!-- Информация об аккаунта -->
             <div class="section-title">👤 Информация</div>
             <div class="stat-item">
                 <span class="stat-label"><span class="stat-icon">📅</span> Аккаунт создан</span>
@@ -121,7 +122,6 @@
                 const res = await fetch('/stats?tag=' + encodeURIComponent(tag));
                 if (res.status === 404) {
                     status.textContent = 'Статистика для этого тега не найдена.';
-                    // clear UI
                     updateStatsUI({});
                     return;
                 }
@@ -135,19 +135,42 @@
             }
         }
 
+        async function createTestTag(tag) {
+            const status = document.getElementById('status');
+            if (!tag) { status.textContent = 'Введите тег.'; return; }
+            status.textContent = 'Создаю тестовый тег…';
+            try {
+                const res = await fetch('/create-test-tag', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tag })
+                });
+                if (!res.ok) throw new Error('Failed to create test tag');
+                const json = await res.json();
+                updateStatsUI(json.stats);
+                status.textContent = 'Тестовый тег создан: ' + tag;
+                // update URL
+                if (history && history.replaceState) {
+                    const u = new URL(window.location);
+                    u.searchParams.set('tag', tag);
+                    history.replaceState(null, '', u.toString());
+                }
+            } catch (err) {
+                console.error(err);
+                status.textContent = 'Ошибка при создании тестового тега.';
+            }
+        }
+
         document.getElementById('loadBtn').addEventListener('click', () => {
             const tag = document.getElementById('tagInput').value.trim();
-            if (!tag) {
-                document.getElementById('status').textContent = 'Введите тег.';
-                return;
-            }
-            // update URL without reloading
-            if (history && history.replaceState) {
-                const u = new URL(window.location);
-                u.searchParams.set('tag', tag);
-                history.replaceState(null, '', u.toString());
-            }
+            if (!tag) { document.getElementById('status').textContent = 'Введите тег.'; return; }
             fetchStatsForTag(tag);
+        });
+
+        document.getElementById('createBtn').addEventListener('click', () => {
+            const tag = document.getElementById('tagInput').value.trim();
+            if (!tag) { document.getElementById('status').textContent = 'Введите тег.'; return; }
+            createTestTag(tag);
         });
 
         // On load: if tag in query, auto-load

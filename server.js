@@ -20,6 +20,19 @@ app.use(express.static(path.join(__dirname)));
 // In-memory store: mapping from tag -> stats object
 let store = {};
 
+function defaultStats() {
+  return {
+    trophies: { current: 0, max: 0 },
+    elo: { current: 0, max: 0 },
+    videos: 0,
+    fame: 0,
+    created: new Date().getFullYear(),
+    soloWins: 0,
+    trioWins: 0,
+    lastUpdate: new Date().toISOString(),
+  };
+}
+
 function loadStore() {
   try {
     if (fs.existsSync(DATA_FILE)) {
@@ -44,18 +57,23 @@ function saveStore() {
 loadStore();
 
 // GET /stats?tag=TAG -> returns stats for tag
+// If tag is missing, return availableTags
+// If tag exists, return it
+// If tag does not exist, create default stats (so user sees something) and return them
 app.get('/stats', (req, res) => {
-  const tag = (req.query.tag || '').trim();
+  const tag = (req.query.tag || '').toString().trim();
   if (!tag) {
-    // Return list of available tags (for convenience)
     return res.json({ availableTags: Object.keys(store) });
   }
 
-  const stats = store[tag];
-  if (!stats) {
-    return res.status(404).json({ error: 'Tag not found' });
+  if (!store[tag]) {
+    // auto-create default stats for better UX
+    store[tag] = defaultStats();
+    saveStore();
+    console.log(`Auto-created default stats for tag: ${tag}`);
   }
-  res.json(stats);
+
+  res.json(store[tag]);
 });
 
 // POST /update-stats
@@ -75,6 +93,30 @@ app.post('/update-stats', (req, res) => {
   store[tag] = { ...(store[tag] || {}), ...newStats };
   saveStore();
   res.json({ ok: true, tag, stats: store[tag] });
+});
+
+// POST /create-test-tag
+// Body: { tag: 'yourTag' }
+// Creates a sample stats object for quicker testing from the UI
+app.post('/create-test-tag', (req, res) => {
+  const body = req.body || {};
+  const tag = (body.tag || '').toString().trim();
+  if (!tag) return res.status(400).json({ error: 'Field "tag" is required' });
+
+  const sample = {
+    trophies: { current: 6000, max: 6500 },
+    elo: { current: 2900, max: 3300 },
+    videos: 45,
+    fame: 1300,
+    created: 2023,
+    soloWins: 330,
+    trioWins: 600,
+    lastUpdate: new Date().toISOString(),
+  };
+
+  store[tag] = sample;
+  saveStore();
+  res.json({ ok: true, tag, stats: sample });
 });
 
 const PORT = process.env.PORT || 3000;
