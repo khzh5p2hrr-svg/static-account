@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Статистика аккаунта</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 5px solid #667eea;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .stats-section {
+            padding: 30px 20px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 15px;
+            margin-bottom: 12px;
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            background: #e8ebf7;
+            transform: translateX(5px);
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #555;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #667eea;
+            min-width: 80px;
+            text-align: right;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #333;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            border-top: 1px solid #ddd;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .stat-item {
+                padding: 12px 12px;
+                margin-bottom: 10px;
+            }
+
+            .stat-value {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Статистика</h1>
+            <p>Аккаунт Brawl Stars</p>
+        </div>
+
+        <div class="stats-section">
+            <!-- Трофеи -->
+            <div class="section-title">🏆 Трофеи</div>
+            <div class="stat-item">
+                <span class="stat-label">
+                    <span class="stat-icon">🎯</span>
+                    Текущее кол-во трофеев
+                </span>
+                <span class="stat-value">5420</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">
+                    <span class="stat-icon">⭐</span>
+                    Максимальное кол-во трофеев
+                </span>
+                <span class="stat-value">6150</span>
+            </div>
+
+            <!-- Эло -->
+            <div class="section-title">⚡ Рейтинг</div>
+            <div class="stat-item">
+                <span class="stat-label">
+                    <span class="stat-icon">📈</span>
+                    Текущее кол-во Эло
+                </span>
+                <span class="stat-value">2850</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">
+                    <span class="stat-icon">🔥</span>
+                    Максимальное кол-во Эло
+                </span>
+                <span class="stat-value">3200</span>
+            </div>
+
+            <!-- Достижения -->
+            <div class="section-title">🎖️ Достижения</div>
+            <div class="stat-item">
+                <span class="stat-label">
+                    <span class="stat-icon">🎥</span>
+                    Видеозаписи
+                </span>
+                <span class="stat-value">42</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">
+                    <span class="stat-icon">👑</span>
+                    Слава
+                </span>
+                <span class="stat-value">1250</span>
+            </div>
+
+            <!-- Информация об аккаунте -->
+            <div class="section-title">👤 Информация</div>
+            <div class="stat-item">
+                <span class="stat-label">
+                    <span class="stat-icon">📅</span>
+                    Аккаунт создан
+                </span>
+                <span class="stat-value">2023</span>
+            </div>
+
+            <!-- Победы -->
+            <div class="section-title">🏅 Победы</div>
+            <div class="stat-item">
+                <span class="stat-label">
+                    <span class="stat-icon">🎮</span>
+                    Побед в Соло
+                </span>
+                <span class="stat-value">324</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">
+                    <span class="stat-icon">👥</span>
+                    Побед в Трио
+                </span>
+                <span class="stat-value">587</span>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>💬 Последнее обновление: сегодня</p>
+        </div>
+    </div>
+
+    <script>
+        // Здесь можно добавить динамическое обновление данных с API
+        // Пример:
+        // fetch('https://api.example.com/stats')
+        //     .then(response => response.json())
+        //     .then(data => updateStats(data));
+        
+        function updateStats(data) {
+            // Функция для обновления статистики
+            console.log('Статистика обновлена:', data);
+        }
+    </script>
+</body>
+</html>
