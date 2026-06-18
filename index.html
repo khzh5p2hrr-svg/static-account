@@ -5,215 +5,85 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Статистика аккаунта</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .container {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-            max-width: 500px;
-            width: 100%;
-            overflow: hidden;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
-            border-bottom: 5px solid #667eea;
-        }
-
-        .header h1 {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-
-        .header p {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-
-        .stats-section {
-            padding: 30px 20px;
-        }
-
-        .stat-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 15px;
-            margin-bottom: 12px;
-            background: #f8f9fa;
-            border-left: 4px solid #667eea;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .stat-item:hover {
-            background: #e8ebf7;
-            transform: translateX(5px);
-        }
-
-        .stat-label {
-            font-size: 14px;
-            color: #555;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .stat-icon {
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-        }
-
-        .stat-value {
-            font-size: 18px;
-            font-weight: 700;
-            color: #667eea;
-            min-width: 80px;
-            text-align: right;
-        }
-
-        .section-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: #333;
-            margin-top: 25px;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #667eea;
-        }
-
-        .footer {
-            background: #f8f9fa;
-            padding: 20px;
-            text-align: center;
-            font-size: 12px;
-            color: #999;
-            border-top: 1px solid #ddd;
-        }
-
-        @media (max-width: 600px) {
-            .header h1 {
-                font-size: 24px;
-            }
-
-            .stat-item {
-                padding: 12px 12px;
-                margin-bottom: 10px;
-            }
-
-            .stat-value {
-                font-size: 16px;
-            }
-        }
+        /* same styles as before (omitted here for brevity in file) */
+        * { margin:0; padding:0; box-sizing:border-box }
+        body{font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px}
+        .container{background:white;border-radius:15px;box-shadow:0 10px 40px rgba(0,0,0,0.3);max-width:500px;width:100%;overflow:hidden}
+        .header{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;padding:20px;text-align:center;border-bottom:5px solid #667eea}
+        .header h1{font-size:24px;margin-bottom:5px}
+        .stats-section{padding:20px}
+        .stat-item{display:flex;justify-content:space-between;align-items:center;padding:12px;margin-bottom:10px;background:#f8f9fa;border-left:4px solid #667eea;border-radius:8px}
+        .section-title{font-weight:700;margin-top:15px;margin-bottom:10px;color:#333}
+        .stat-label{font-size:14px;color:#555;font-weight:600;display:flex;align-items:center;gap:8px}
+        .stat-value{font-size:16px;font-weight:700;color:#667eea;min-width:80px;text-align:right}
+        .controls{display:flex;gap:8px;margin-bottom:12px}
+        .controls input{flex:1;padding:8px;border-radius:6px;border:1px solid #ccc}
+        .controls button{padding:8px 12px;border-radius:6px;border:none;background:#667eea;color:#fff;cursor:pointer}
+        .footer{background:#f8f9fa;padding:12px;text-align:center;font-size:12px;color:#999;border-top:1px solid #ddd}
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <h1>📊 Статистика</h1>
-            <p>Аккаунт Brawl Stars</p>
+            <p>Аккаунт Brawl Stars — введите TAG, чтобы увидеть статистику</p>
         </div>
 
         <div class="stats-section">
+            <div class="controls">
+                <input id="tagInput" placeholder="Введите ваш тег (например: sampleTag123)" />
+                <button id="loadBtn">Показать</button>
+            </div>
+            <div id="status" style="margin-bottom:10px;color:#444"></div>
+
             <!-- Трофеи -->
             <div class="section-title">🏆 Трофеи</div>
             <div class="stat-item">
-                <span class="stat-label">
-                    <span class="stat-icon">🎯</span>
-                    Текущее кол-во трофеев
-                </span>
+                <span class="stat-label"><span class="stat-icon">🎯</span> Текущее кол-во трофеев</span>
                 <span class="stat-value" id="trophies-current">—</span>
             </div>
             <div class="stat-item">
-                <span class="stat-label">
-                    <span class="stat-icon">⭐</span>
-                    Максимальное кол-во трофеев
-                </span>
+                <span class="stat-label"><span class="stat-icon">⭐</span> Максимальное кол-во трофеев</span>
                 <span class="stat-value" id="trophies-max">—</span>
             </div>
 
             <!-- Эло -->
             <div class="section-title">⚡ Рейтинг</div>
             <div class="stat-item">
-                <span class="stat-label">
-                    <span class="stat-icon">📈</span>
-                    Текущее кол-во Эло
-                </span>
+                <span class="stat-label"><span class="stat-icon">📈</span> Текущее кол-во Эло</span>
                 <span class="stat-value" id="elo-current">—</span>
             </div>
             <div class="stat-item">
-                <span class="stat-label">
-                    <span class="stat-icon">🔥</span>
-                    Максимальное кол-во Эло
-                </span>
+                <span class="stat-label"><span class="stat-icon">🔥</span> Максимальное кол-во Эло</span>
                 <span class="stat-value" id="elo-max">—</span>
             </div>
 
             <!-- Достижения -->
             <div class="section-title">🎖️ Достижения</div>
             <div class="stat-item">
-                <span class="stat-label">
-                    <span class="stat-icon">🎥</span>
-                    Видеозаписи
-                </span>
+                <span class="stat-label"><span class="stat-icon">🎥</span> Видеозаписи</span>
                 <span class="stat-value" id="videos">—</span>
             </div>
             <div class="stat-item">
-                <span class="stat-label">
-                    <span class="stat-icon">👑</span>
-                    Слава
-                </span>
+                <span class="stat-label"><span class="stat-icon">👑</span> Слава</span>
                 <span class="stat-value" id="fame">—</span>
             </div>
 
             <!-- Информация об аккаунте -->
             <div class="section-title">👤 Информация</div>
             <div class="stat-item">
-                <span class="stat-label">
-                    <span class="stat-icon">📅</span>
-                    Аккаунт создан
-                </span>
+                <span class="stat-label"><span class="stat-icon">📅</span> Аккаунт создан</span>
                 <span class="stat-value" id="created">—</span>
             </div>
 
             <!-- Победы -->
             <div class="section-title">🏅 Победы</div>
             <div class="stat-item">
-                <span class="stat-label">
-                    <span class="stat-icon">🎮</span>
-                    Побед в Соло
-                </span>
+                <span class="stat-label"><span class="stat-icon">🎮</span> Побед в Соло</span>
                 <span class="stat-value" id="soloWins">—</span>
             </div>
             <div class="stat-item">
-                <span class="stat-label">
-                    <span class="stat-icon">👥</span>
-                    Побед в Трио
-                </span>
+                <span class="stat-label"><span class="stat-icon">👥</span> Побед в Трио</span>
                 <span class="stat-value" id="trioWins">—</span>
             </div>
         </div>
@@ -224,19 +94,6 @@
     </div>
 
     <script>
-        // The page will fetch current stats from /stats and update the UI.
-        // The game should send updates by POSTing JSON to /update-stats.
-        // Example payload:
-        // {
-        //   trophies: { current: 6000, max: 6500 },
-        //   elo: { current: 2900, max: 3300 },
-        //   videos: 45,
-        //   fame: 1300,
-        //   created: 2023,
-        //   soloWins: 330,
-        //   trioWins: 600
-        // }
-
         function setText(id, value) {
             const el = document.getElementById(id);
             if (!el) return;
@@ -257,25 +114,51 @@
             document.getElementById('lastUpdate').textContent = '💬 Последнее обновление: ' + last;
         }
 
-        async function fetchStats() {
+        async function fetchStatsForTag(tag) {
+            const status = document.getElementById('status');
+            status.textContent = 'Загрузка…';
             try {
-                const res = await fetch('/stats');
+                const res = await fetch('/stats?tag=' + encodeURIComponent(tag));
+                if (res.status === 404) {
+                    status.textContent = 'Статистика для этого тега не найдена.';
+                    // clear UI
+                    updateStatsUI({});
+                    return;
+                }
                 if (!res.ok) throw new Error('Network response not OK');
                 const data = await res.json();
                 updateStatsUI(data);
+                status.textContent = 'Данные загружены для тега: ' + tag;
             } catch (err) {
                 console.error('Failed to fetch stats:', err);
+                status.textContent = 'Ошибка при получении статистики.';
             }
         }
 
-        // Initial load
-        fetchStats();
-        // Refresh every 5 seconds
-        setInterval(fetchStats, 5000);
+        document.getElementById('loadBtn').addEventListener('click', () => {
+            const tag = document.getElementById('tagInput').value.trim();
+            if (!tag) {
+                document.getElementById('status').textContent = 'Введите тег.';
+                return;
+            }
+            // update URL without reloading
+            if (history && history.replaceState) {
+                const u = new URL(window.location);
+                u.searchParams.set('tag', tag);
+                history.replaceState(null, '', u.toString());
+            }
+            fetchStatsForTag(tag);
+        });
 
-        // Optional: If your game can send stats directly from the browser (same origin),
-        // it can use the /update-stats endpoint. Example:
-        // fetch('/update-stats', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) })
+        // On load: if tag in query, auto-load
+        window.addEventListener('load', () => {
+            const u = new URL(window.location);
+            const tag = u.searchParams.get('tag');
+            if (tag) {
+                document.getElementById('tagInput').value = tag;
+                fetchStatsForTag(tag);
+            }
+        });
     </script>
 </body>
 </html>

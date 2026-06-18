@@ -17,64 +17,64 @@ app.use((req, res, next) => {
 // Serve static files (index.html, CSS, client JS)
 app.use(express.static(path.join(__dirname)));
 
-// Load stats from disk (if present)
-let stats = {
-  trophies: { current: 5420, max: 6150 },
-  elo: { current: 2850, max: 3200 },
-  videos: 42,
-  fame: 1250,
-  created: 2023,
-  soloWins: 324,
-  trioWins: 587,
-  lastUpdate: new Date().toISOString(),
-};
+// In-memory store: mapping from tag -> stats object
+let store = {};
 
-function loadStats() {
+function loadStore() {
   try {
     if (fs.existsSync(DATA_FILE)) {
       const raw = fs.readFileSync(DATA_FILE, 'utf8');
-      stats = JSON.parse(raw);
-      console.log('Loaded stats from', DATA_FILE);
+      store = JSON.parse(raw) || {};
+      console.log('Loaded store from', DATA_FILE);
     }
   } catch (err) {
-    console.error('Failed to load stats, using defaults:', err);
+    console.error('Failed to load store, starting empty:', err);
+    store = {};
   }
 }
 
-function saveStats() {
+function saveStore() {
   try {
-    fs.writeFileSync(DATA_FILE, JSON.stringify(stats, null, 2));
+    fs.writeFileSync(DATA_FILE, JSON.stringify(store, null, 2));
   } catch (err) {
-    console.error('Failed to save stats:', err);
+    console.error('Failed to save store:', err);
   }
 }
 
-loadStats();
+loadStore();
 
-// Endpoint for the client (web page) to read stats
+// GET /stats?tag=TAG -> returns stats for tag
 app.get('/stats', (req, res) => {
+  const tag = (req.query.tag || '').trim();
+  if (!tag) {
+    // Return list of available tags (for convenience)
+    return res.json({ availableTags: Object.keys(store) });
+  }
+
+  const stats = store[tag];
+  if (!stats) {
+    return res.status(404).json({ error: 'Tag not found' });
+  }
   res.json(stats);
 });
 
-// Endpoint for the game to POST current stats
-// The game should POST JSON like:
-// {
-//   "trophies": { "current": 6000, "max": 6500 },
-//   "elo": { "current": 2900, "max": 3300 },
-//   "videos": 45,
-//   "fame": 1300,
-//   "created": 2023,
-//   "soloWins": 330,
-//   "trioWins": 600
-// }
+// POST /update-stats
+// Accepts JSON body with a required `tag` field and stats fields
 app.post('/update-stats', (req, res) => {
   const body = req.body;
   if (!body || typeof body !== 'object') return res.status(400).json({ error: 'JSON body expected' });
+  const tag = (body.tag || '').toString().trim();
+  if (!tag) return res.status(400).json({ error: 'Field "tag" is required in body' });
 
-  // Merge incoming fields into stats
-  stats = { ...stats, ...body, lastUpdate: new Date().toISOString() };
-  saveStats();
-  res.json({ ok: true, stats });
+  // Prepare stats object (remove tag from stored fields)
+  const newStats = { ...body };
+  delete newStats.tag;
+  newStats.lastUpdate = new Date().toISOString();
+
+  // Merge with existing
+  store[tag] = { ...(store[tag] || {}), ...newStats };
+  saveStore();
+  res.json({ ok: true, tag, stats: store[tag] });
 });
 
 const PORT = process.env.PORT || 3000;
