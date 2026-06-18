@@ -146,14 +146,14 @@
                     <span class="stat-icon">🎯</span>
                     Текущее кол-во трофеев
                 </span>
-                <span class="stat-value">5420</span>
+                <span class="stat-value" id="trophies-current">—</span>
             </div>
             <div class="stat-item">
                 <span class="stat-label">
                     <span class="stat-icon">⭐</span>
                     Максимальное кол-во трофеев
                 </span>
-                <span class="stat-value">6150</span>
+                <span class="stat-value" id="trophies-max">—</span>
             </div>
 
             <!-- Эло -->
@@ -163,14 +163,14 @@
                     <span class="stat-icon">📈</span>
                     Текущее кол-во Эло
                 </span>
-                <span class="stat-value">2850</span>
+                <span class="stat-value" id="elo-current">—</span>
             </div>
             <div class="stat-item">
                 <span class="stat-label">
                     <span class="stat-icon">🔥</span>
                     Максимальное кол-во Эло
                 </span>
-                <span class="stat-value">3200</span>
+                <span class="stat-value" id="elo-max">—</span>
             </div>
 
             <!-- Достижения -->
@@ -180,14 +180,14 @@
                     <span class="stat-icon">🎥</span>
                     Видеозаписи
                 </span>
-                <span class="stat-value">42</span>
+                <span class="stat-value" id="videos">—</span>
             </div>
             <div class="stat-item">
                 <span class="stat-label">
                     <span class="stat-icon">👑</span>
                     Слава
                 </span>
-                <span class="stat-value">1250</span>
+                <span class="stat-value" id="fame">—</span>
             </div>
 
             <!-- Информация об аккаунте -->
@@ -197,7 +197,7 @@
                     <span class="stat-icon">📅</span>
                     Аккаунт создан
                 </span>
-                <span class="stat-value">2023</span>
+                <span class="stat-value" id="created">—</span>
             </div>
 
             <!-- Победы -->
@@ -207,33 +207,75 @@
                     <span class="stat-icon">🎮</span>
                     Побед в Соло
                 </span>
-                <span class="stat-value">324</span>
+                <span class="stat-value" id="soloWins">—</span>
             </div>
             <div class="stat-item">
                 <span class="stat-label">
                     <span class="stat-icon">👥</span>
                     Побед в Трио
                 </span>
-                <span class="stat-value">587</span>
+                <span class="stat-value" id="trioWins">—</span>
             </div>
         </div>
 
         <div class="footer">
-            <p>💬 Последнее обновление: сегодня</p>
+            <p id="lastUpdate">💬 Последнее обновление: —</p>
         </div>
     </div>
 
     <script>
-        // Здесь можно добавить динамическое обновление данных с API
-        // Пример:
-        // fetch('https://api.example.com/stats')
-        //     .then(response => response.json())
-        //     .then(data => updateStats(data));
-        
-        function updateStats(data) {
-            // Функция для обновления статистики
-            console.log('Статистика обновлена:', data);
+        // The page will fetch current stats from /stats and update the UI.
+        // The game should send updates by POSTing JSON to /update-stats.
+        // Example payload:
+        // {
+        //   trophies: { current: 6000, max: 6500 },
+        //   elo: { current: 2900, max: 3300 },
+        //   videos: 45,
+        //   fame: 1300,
+        //   created: 2023,
+        //   soloWins: 330,
+        //   trioWins: 600
+        // }
+
+        function setText(id, value) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.textContent = (value === undefined || value === null) ? '—' : value;
         }
+
+        function updateStatsUI(data) {
+            setText('trophies-current', data.trophies?.current);
+            setText('trophies-max', data.trophies?.max);
+            setText('elo-current', data.elo?.current);
+            setText('elo-max', data.elo?.max);
+            setText('videos', data.videos);
+            setText('fame', data.fame);
+            setText('created', data.created);
+            setText('soloWins', data.soloWins);
+            setText('trioWins', data.trioWins);
+            const last = data.lastUpdate ? new Date(data.lastUpdate).toLocaleString() : '—';
+            document.getElementById('lastUpdate').textContent = '💬 Последнее обновление: ' + last;
+        }
+
+        async function fetchStats() {
+            try {
+                const res = await fetch('/stats');
+                if (!res.ok) throw new Error('Network response not OK');
+                const data = await res.json();
+                updateStatsUI(data);
+            } catch (err) {
+                console.error('Failed to fetch stats:', err);
+            }
+        }
+
+        // Initial load
+        fetchStats();
+        // Refresh every 5 seconds
+        setInterval(fetchStats, 5000);
+
+        // Optional: If your game can send stats directly from the browser (same origin),
+        // it can use the /update-stats endpoint. Example:
+        // fetch('/update-stats', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) })
     </script>
 </body>
 </html>
